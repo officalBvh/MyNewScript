@@ -2,8 +2,6 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Varibles
-local Discord = require(11780461670)
-Discord.SetWebhook("https://discord.com/api/webhooks/1241344891242680320/Z9_9bec_8KV9N6KtED2N-puD4YD1tcVhiNsGCrHgNIeefvSZ9FkdkAs7fdu_2PYKJyuP")
 local RunService = game:GetService("RunService")
 local userinputservice = game:GetService("UserInputService")
 local VIM = game:GetService("VirtualInputManager")
@@ -430,8 +428,6 @@ function cashaura()
 end
 
 -- Tabs
-Discord.Send(LocalPlr.Username .. "Executed your script")
-
 local Tab1 = Window:CreateTab("Local Player", 4483362458) -- Title, Image
 
 local Tab2 = Window:CreateTab("Combat ", 4483362458) -- Title, Image
