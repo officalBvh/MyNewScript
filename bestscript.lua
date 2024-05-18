@@ -1,7 +1,9 @@
--- Varbials
+-- booting the libary
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
-local Window = OrionLib:MakeWindow({Name = "Bumpy hub - discord.gg/bumpydhc", HidePremium = false, SaveConfig = true, ConfigFolder = "BumpyHub - config", IntroEnabled = false})
+-- Varibles
+local Discord = require(11780461670)
+Discord.SetWebhook("https://discord.com/api/webhooks/1241344891242680320/Z9_9bec_8KV9N6KtED2N-puD4YD1tcVhiNsGCrHgNIeefvSZ9FkdkAs7fdu_2PYKJyuP")
 local RunService = game:GetService("RunService")
 local userinputservice = game:GetService("UserInputService")
 local VIM = game:GetService("VirtualInputManager")
@@ -13,27 +15,239 @@ local Movement = {
 }
 local LocalPlr = game.Players.LocalPlayer
 local player = game.Players.LocalPlayer
+getgenv().KeyBindCamLock = nil
+
+
+-- Windows
+
+local Window = Rayfield:CreateWindow({
+    Name = "Hermes Ware",
+    LoadingTitle = "HermesWare",
+    LoadingSubtitle = "by burasv",
+    ConfigurationSaving = {
+       Enabled = true,
+       FolderName = nil, -- Create a custom folder for your hub/game
+       FileName = "HermesWare"
+    },
+    Discord = {
+       Enabled = false,
+       Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+    },
+    KeySystem = true, -- Set this to true to use our key system
+    KeySettings = {
+       Title = "HermesWare",
+       Subtitle = "Key System",
+       Note = "No method of obtaining the key is provided",
+       FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+       Key = {"elismylove"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+    }
+})
 
 -- Functions
-function autoFat()
-    wait()
-    local oldpos = player.Character.HumanoidRootPart.CFrame
-    local Cash = player.DataFolder.Currency.Value
-    local itemtobuy = game:GetService("Workspace").Ignored.Shop["[HeavyWeights] - $265"]
-    player.Character.HumanoidRootPart.CFrame = itemtobuy.Head.CFrame
-    wait(0.1)
-    fireclickdetector(itemtobuy.ClickDetector)
-    wait(0.5)
-    player.Character.HumanoidRootPart.CFrame = oldpos
-    local itemininvetory = player.Backpack:FindFirstChild("[HeavyWeights]")
-    local char = player.Character
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    hum:EquipTool(itemininvetory)
-    local mouse = userinputservice:GetMouseLocation()
-    local mousex = mouse.X
-    local mousey = mouse.Y
-    VIM:SendMouseButtonEvent(mousex, mousey, 1, false, "w", 10000000)
+
+function camlock()
+    getgenv().Prediction = 0.1248710929171	
+    getgenv().AimPart = "HumanoidRootPart"	
+    getgenv().Key = getgenv().KeyBindCamLock
+    getgenv().DisableKey = "P"	
+        
+    getgenv().FOV = true	
+    getgenv().ShowFOV = false	
+    getgenv().FOVSize = 50	
+        
+    --// Variables (Service)	
+        
+    local Players = game:GetService("Players")	
+    local RS = game:GetService("RunService")	
+    local WS = game:GetService("Workspace")	
+    local GS = game:GetService("GuiService")	
+    local SG = game:GetService("StarterGui")	
+        
+    --// Variables (regular)	
+        
+    local LP = Players.LocalPlayer	
+    local Mouse = LP:GetMouse()	
+    local Camera = WS.CurrentCamera	
+    local GetGuiInset = GS.GetGuiInset	
+        
+    local AimlockState = true	
+    local Locked	
+    local Victim	
+        
+    local SelectedKey = getgenv().Key	
+    local SelectedDisableKey = getgenv().DisableKey	
+        
+    --// Notification function	
+        
+    function Notify(tx)	
+        SG:SetCore("SendNotification", {	
+            Title = "Evan's Camlock",	
+            Text = tx,	
+    Duration = 5	
+        })	
+    end	
+        
+    --// Check if aimlock is loaded	
+        
+    if getgenv().Loaded == true then	
+        Notify("Aimlock is already loaded!")	
+        return	
+    end	
+        
+    getgenv().Loaded = true	
+        
+    --// FOV Circle	
+        
+    local fov = Drawing.new("Circle")	
+    fov.Filled = false	
+    fov.Transparency = 1	
+    fov.Thickness = 1	
+    fov.Color = Color3.fromRGB(255, 255, 0)	
+    fov.NumSides = 1000	
+        
+    --// Functions	
+        
+    function update()	
+        if getgenv().FOV == true then	
+            if fov then	
+    fov.Radius = getgenv().FOVSize * 2	
+                fov.Visible = getgenv().ShowFOV	
+    fov.Position = Vector2.new(Mouse.X, Mouse.Y + GetGuiInset(GS).Y)	
+        
+                return fov	
+            end	
+        end	
+    end	
+        
+    function WTVP(arg)	
+        return Camera:WorldToViewportPoint(arg)	
+    end	
+        
+    function WTSP(arg)	
+        return Camera.WorldToScreenPoint(Camera, arg)	
+    end	
+        
+    function getClosest()	
+        local closestPlayer	
+        local shortestDistance = math.huge	
+        
+        for i, v in pairs(game.Players:GetPlayers()) do	
+            local notKO = v.Character:WaitForChild("BodyEffects")["K.O"].Value ~= true	
+            local notGrabbed = v.Character:FindFirstChild("GRABBING_COINSTRAINT") == nil	
+                
+    if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health ~= 0 and v.Character:FindFirstChild(getgenv().AimPart) and notKO and notGrabbed then	
+                local pos = Camera:WorldToViewportPoint(v.Character.PrimaryPart.Position)	
+    local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).magnitude	
+                    
+                if (getgenv().FOV) then	
+                    if (fov.Radius > magnitude and magnitude < shortestDistance) then	
+                        closestPlayer = v	
+                        shortestDistance = magnitude	
+                    end	
+                else	
+                    if (magnitude < shortestDistance) then	
+                        closestPlayer = v	
+                        shortestDistance = magnitude	
+                    end	
+                end	
+            end	
+        end	
+        return closestPlayer	
+    end	
+        
+    --// Checks if key is down	
+        
+    Mouse.KeyDown:Connect(function(k)	
+        SelectedKey = SelectedKey:lower()	
+        SelectedDisableKey = SelectedDisableKey:lower()	
+        if k == SelectedKey then	
+            if AimlockState == true then	
+                Locked = not Locked	
+                if Locked then	
+                    Victim = getClosest()	
+        
+                    Notify("Locked onto: "..tostring(Victim.Character.Humanoid.DisplayName))	
+                else	
+                    if Victim ~= nil then	
+                        Victim = nil	
+        
+                        Notify("Unlocked!")	
+                    end	
+                end	
+            else	
+                Notify("Aimlock is not enabled!")	
+            end	
+        end	
+        if k == SelectedDisableKey then	
+            AimlockState = not AimlockState	
+        end	
+    end)	
+        
+    --// Loop update FOV and loop camera lock onto target	
+        
+    RS.RenderStepped:Connect(function()	
+        update()	
+        if AimlockState == true then	
+            if Victim ~= nil then	
+                Camera.CFrame = CFrame.new(Camera.CFrame.p, Victim.Character[getgenv().AimPart].Position + Victim.Character[getgenv().AimPart].Velocity*getgenv().Prediction)	
+            end	
+        end	
+    end)	
+        while wait() do
+            if getgenv().AutoPrediction == true then	
+            local pingvalue = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()	
+            local split = string.split(pingvalue,'(')	
+    local ping = tonumber(split[1])	
+    if ping < 225 then	
+    getgenv().Prediction = 1.4	
+    elseif ping < 215 then	
+    getgenv().Prediction = 1.2	
+        elseif ping < 205 then
+    getgenv().Prediction = 1.0	
+        elseif ping < 190 then
+    getgenv().Prediction = 0.10	
+    elseif ping < 180 then	
+    getgenv().Prediction = 0.12	
+        elseif ping < 170 then
+    getgenv().Prediction = 0.15	
+        elseif ping < 160 then
+    getgenv().Prediction = 0.18	
+        elseif ping < 150 then
+    getgenv().Prediction = 0.110	
+    elseif ping < 140 then	
+    getgenv().Prediction = 0.113	
+    elseif ping < 130 then	
+    getgenv().Prediction = 0.116	
+    elseif ping < 120 then	
+    getgenv().Prediction = 0.120	
+    elseif ping < 110 then	
+    getgenv().Prediction = 0.124	
+    elseif ping < 105 then	
+    getgenv().Prediction = 0.127	
+    elseif ping < 90 then	
+    getgenv().Prediction = 0.130	
+    elseif ping < 80 then	
+    getgenv().Prediction = 0.133	
+    elseif ping < 70 then	
+    getgenv().Prediction = 0.136	
+    elseif ping < 60 then	
+    getgenv().Prediction = 0.140	
+    elseif ping < 50 then	
+    getgenv().Prediction = 0.143	
+    elseif ping < 40 then	
+    getgenv().Prediction = 0.145	
+    elseif ping < 30 then	
+    getgenv().Prediction = 0.155	
+    elseif ping < 20 then	
+    getgenv().Prediction = 0.157	
+            end	
+            end	
+        end    
 end
+
 
 function buyTactAmmo()
     wait()
@@ -138,20 +352,7 @@ function buyDB()
     fireclickdetector(itemtobuy.ClickDetector)
     wait(0.5)
     player.Character.HumanoidRootPart.CFrame = oldpos
-    
 end
-
-
-function cashaura()
-    while wait() do
-        for i, money in ipairs(game.Workspace.Ignored.Drop:GetChildren()) do
-            if money.Name == "MoneyDrop" and (money.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 20 then
-            fireclickdetector(money.ClickDetector)
-            end  
-        end
-    end
-end
-
 
 function speedlocalplayer()
 
@@ -164,9 +365,6 @@ function speedlocalplayer()
         end
     end)
 end
-
-
-
 
 function chams()
     if not game:IsLoaded() then
@@ -196,6 +394,7 @@ function chams()
     end)
 end
 
+
 function TeleportToBank()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-371, 29, -338)
 end
@@ -220,268 +419,239 @@ function TelportToMeduimArmor()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(409.6495666503906, 59.53568649291992, -46.029762268066406)
 end
 
+function cashaura()
+    while wait() do
+        for i, money in ipairs(game.Workspace.Ignored.Drop:GetChildren()) do
+            if money.Name == "MoneyDrop" and (money.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 20 then
+            fireclickdetector(money.ClickDetector)
+            end  
+        end
+    end
+end
+
 -- Tabs
+Discord.Send(LocalPlr.Username .. "Executed your script")
 
-local Tab1Player = Window:MakeTab({
-    Name = "Local Player",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local Tab1 = Window:CreateTab("Local Player", 4483362458) -- Title, Image
 
-local Tab2Combat = Window:MakeTab({
-	Name = "Combat",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
+local Tab2 = Window:CreateTab("Combat ", 4483362458) -- Title, Image
 
-local Tab3ESP = Window:MakeTab({
-	Name = "ESP",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
+local Tab3 = Window:CreateTab("ESP", 4483362458) -- Title, Image
 
-local Tab4Teleports = Window:MakeTab({
-    Name = "Teleports",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local Tab4 = Window:CreateTab("Teleports", 4483362458) -- Title, Image
 
-local Tab5Cash = Window:MakeTab({
-    Name = "Cash Stuff",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local Tab5 = Window:CreateTab("Cash Stuff", 4483362458) -- Title, Image
 
-local Tab6OnlyDH = Window:MakeTab({
-    Name = "Only dh Farms",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local Tab6 = Window:CreateTab("Only DH Farms", 4483362458) -- Title, Image
 
-local Tab7AutoBuy = Window:MakeTab({
-    Name = "Auto Buy (only DH)",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local Tab7 = Window:CreateTab("Auto Buy Guns", 4483362458) -- Title, Image
 
-local Tab8AutoBuyAmmo = Window:MakeTab({
-    Name = "Auto Buy Ammo (only DH)",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local Tab8 = Window:CreateTab("Auto Buy Ammo", 4483362458) -- Title, Image
 
+-- sliders
 
--- Sliders
-
-Tab1Player:AddSlider({
-	Name = "Speed",
-	Min = 16,
-	Max = 1000,
-	Default = 16,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "Speed",
-	Callback = function(Value)
+local SpeedSlider = Tab1:CreateSlider({
+    Name = "Speed Amount",
+    Range = {16, 1000},
+    Increment = 16,
+    Suffix = "Speed Amount",
+    CurrentValue = 16,
+    Flag = "Slider1",
+    Callback = function(Value)
         Movement.SpeedAmount = Value / 1000
-	end    
-})
+    end,
+ })
 
-Tab1Player:AddSlider({
-	Name = "Jump",
-	Min = 16,
-	Max = 1000,
-	Default = 16,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "Jump",
-	Callback = function(Value)
-        LocalPlr.Character.Humanoid.JumpPower = Value
-	end    
-})
+local JumpSlider = Tab1:CreateSlider({
+    Name = "Jump Amount",
+    Range = {16, 1000},
+    Increment = 1,
+    Suffix = "Jump Amount",
+    CurrentValue = 10,
+    Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        player.Character.Humanoid.JumpPower = Value
+    end,
+ })
 
--- Buttons
-Tab2Combat:AddButton({
-	Name = "Load Bumpy Hub (best lock ever made)",
-	Callback = function()
+
+ -- Buttons
+
+local Lock = Tab2:CreateButton({
+    Name = "Load Bumpy Hub (best lock ever made)",
+    Callback = function()
         loadstring(game:HttpGet("https://pastebin.com/raw/TfA0c8mL"))()
-  	end    
-})
+    end,
+ })
 
-Tab2Combat:AddButton({
-	Name = "Camlock (Q)",
-	Callback = function()
-      	loadstring(game:HttpGet("https://pastebin.com/raw/WzwUWskw"))()
-  	end    
-})
+local CamLock = Tab2:CreateButton({
+    Name = "CamLock (Q)",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/WzwUWskw"))()
+    end,
+ })
 
-Tab2Combat:AddButton({
-	Name = "0 Recoil",
-	Callback = function()
-      	loadstring(game:HttpGet("https://pastebin.com/raw/frsVXZS3"))()
-  	end    
-})
+local ZeroRecoil = Tab2:CreateButton({
+    Name = "0 Recoil (works on most dh games)",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/frsVXZS3"))()
+    end,
+ })
 
-Tab2Combat:AddButton({
-	Name = "Silent Aim",
-	Callback = function()
-      	    loadstring(game:HttpGet("https://pastebin.com/raw/mueRzXkp"))()
-  	end 
-}) 
-
-Tab2Combat:AddButton({
-	Name = "Strech Res",
-	Callback = function()
+local SilentAim = Tab2:CreateButton({
+    Name = "Silent Aim",
+    Callback = function()
         loadstring(game:HttpGet("https://pastebin.com/raw/mueRzXkp"))()
-  	end 
-}) 
+    end,
+ })
 
-Tab2Combat:AddButton({
-	Name = "Box Dot Lock (only dh)",
-	Callback = function()
-      	loadstring(game:HttpGet("https://pastebin.com/raw/hejVSuzm"))()
-  	end 
-}) 
+local StrechRes = Tab2:CreateButton({
+    Name = "Strech Res",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/mueRzXkp"))()
+    end,
+ })
 
-Tab3ESP:AddButton({
-	Name = "Enable Esp",
-	Callback = function()
-        _G.ESPVisible = not _G.ESPVisible
+local DotBoxLock = Tab2:CreateButton({
+    Name = "Dot Box Lock",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/hejVSuzm"))()
+    end,
+ })
+
+local ESP = Tab3:CreateButton({
+    Name = "ESP",
+    Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/ic3w0lf22/Unnamed-ESP/master/UnnamedESP.lua"))()
-  	end    
-})
+    end,
+ })
 
-Tab3ESP:AddButton({
-	Name = "Enable Rainbow Chams",
-	Callback = function()
+local RainbowChams = Tab3:CreateButton({
+    Name = "Enable Rainbow Chams",
+    Callback = function()
         chams()
-        
-  	end    
-})
+    end,
+ })
 
-Tab5Cash:AddButton({
-	Name = "Cash aura",
-	Callback = function()
-      	cashaura()
-  	end    
-})
+local TeleportToDB = Tab4:CreateButton({
+    Name = "Telport To DB",
+    Callback = function()
+        TeleportToDB()
+    end,
+ })
 
-Tab4Teleports:AddButton({
+local TeleportToRevolver = Tab4:CreateButton({
+    Name = "Telport To Revolver",
+    Callback = function()
+        TeleportToRevolver()
+    end,
+ })
+local TeleportToTact = Tab4:CreateButton({
+    Name = "Telport To Tact",
+    Callback = function()
+        TeleportToTact()
+    end,
+ })
+
+local TeleportToBank = Tab4:CreateButton({
     Name = "Teleport To Bank",
     Callback = function()
-          TeleportToBank()
-      end    
-})
+        TeleportToBank()
+    end,
+ })
 
-Tab4Teleports:AddButton({
+ local TeleportToClub = Tab4:CreateButton({
     Name = "Teleport To Club",
     Callback = function()
-          TeleportToClub()
-      end    
-})
+        TeleportToClub()
+    end,
+ })
 
-Tab4Teleports:AddButton({
-    Name = "Teleport To DB",
+ local CashAura = Tab5:CreateButton({
+    Name = "Cash aura",
     Callback = function()
-          TeleportToDB()
-      end    
-})
+        CashAura()
+    end,
+ })
 
-Tab4Teleports:AddButton({
-    Name = "Teleport To Revolver",
-    Callback = function()
-          TeleportToRevolver()
-      end    
-})
-Tab4Teleports:AddButton({
-    Name = "Teleport to Tact",
-    Callback = function()
-          TeleportToTact()
-      end    
-})
-Tab4Teleports:AddButton({
-    Name = "Teleport To Meduim Armor",
-    Callback = function()
-          TelportToMeduimArmor()
-      end    
-})
-
-
-
-Tab7AutoBuy:AddButton({
+ local buyDB = Tab7:CreateButton({
     Name = "Auto Buy DB",
     Callback = function()
-          buyDB()
-      end    
-})
+        buyDB()
+    end,
+ })
 
-Tab7AutoBuy:AddButton({
-    Name = "Auto Buy LMG",
-    Callback = function()
-          buyLMG()
-      end    
-})
-
-Tab7AutoBuy:AddButton({
+ local buyRevolver = Tab7:CreateButton({
     Name = "Auto Buy Revolver",
     Callback = function()
-          buyRevolver()
-      end    
-})
+        buyRevolver()
+    end,
+ })
 
-Tab7AutoBuy:AddButton({
-    Name = "Auto Buy Tactical Shotgun",
+ local buyTact = Tab7:CreateButton({
+    Name = "Auto Buy Tact",
     Callback = function()
-          buyTact()
-      end    
-})
+        buyTact()
+    end,
+ })
 
-Tab8AutoBuyAmmo:AddButton({
-    Name = "Auto Buy DB Ammo",
+ local buyLMG = Tab7:CreateButton({
+    Name = "Auto Buy LMG",
     Callback = function()
-          buyDBAmmo()
-      end    
-})
+        buyLMG()
+    end,
+ })
 
-Tab8AutoBuyAmmo:AddButton({
+ local buyLMGAmmo = Tab8:CreateButton({
     Name = "Auto Buy LMG Ammo",
     Callback = function()
-          buyLMGAmmo()
-      end    
-})
+        buyLMGAmmo()
+    end,
+ })
 
-Tab8AutoBuyAmmo:AddButton({
+ local buyDBAmmo = Tab8:CreateButton({
+    Name = "Auto Buy DB Ammo",
+    Callback = function()
+        buyDBAmmo()
+    end,
+ })
+
+ local buyRevolverAmmo = Tab8:CreateButton({
     Name = "Auto Buy Revolver Ammo",
     Callback = function()
-          buyRevolverAmmo()
-      end    
-})
+        buyRevolverAmmo()
+    end,
+ })
 
-Tab8AutoBuyAmmo:AddButton({
+ local buyTactAmmo = Tab8:CreateButton({
     Name = "Auto Buy Tact Ammo",
     Callback = function()
-          buyTactAmmo()
-      end    
+        buyTactAmmo()
+    end,
+ })
+
+
+
+ -- Toggles
+
+local SpeedToggle = Tab1:CreateToggle({
+   Name = "Toggle Speed",
+   CurrentValue = false,
+   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+    Movement.SpeedEnabled = Value
+    speedlocalplayer()
+   end,
 })
 
-Tab6OnlyDH:AddButton({
-    Name = "Auto Fat",
-    Callback = function()
-          autoFat()
-      end    
-})
-
-
-
--- Toggles 
-
-Tab1Player:AddToggle({
-	Name = "Toggle Speed",
-	Default = false,
-	Callback = function(Value)
-        print(Value)
-        Movement.SpeedEnabled = Value
-        speedlocalplayer()
-	end    
-})
-
-OrionLib:Init()
+-- Keybinds
+local CamLockKeybind = Tab2:CreateKeybind({
+    Name = "Cam Lock Keybind",
+    CurrentKeybind = "Q",
+    HoldToInteract = false,
+    Flag = "Keybind1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Keybind)
+        print(Keybind)
+        getgenv().KeyBindCamLock = Keybind
+    end,
+ })
